@@ -7,17 +7,17 @@ class StepperMotor {
         int pin_dir;
         bool direction;
         bool startDirection;
-        long stepsPerUnit;
+        float stepsPerUnit;
         long positon;
         unsigned long last_step_time;
         unsigned long step_delay;
 
     public:
         StepperMotor(int p, int d);
-        void setSpeed(long whatSpeed);
-        void setStepsPerUnit(long ppu);
+        void setSpeed(float whatSpeed);
+        void setStepsPerUnit(float ppu);
         void setStartDirection(bool dir);
-        void moveTo(long absolute);        
+        void moveTo(float absolute);        
 };
 
 #endif

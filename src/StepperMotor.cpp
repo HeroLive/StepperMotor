@@ -12,12 +12,12 @@ StepperMotor::StepperMotor(int p, int d) : pin_pul(p), pin_dir(d)
     pinMode(pin_dir, OUTPUT);
 }
 
-void StepperMotor::setSpeed(long whatSpeed)
+void StepperMotor::setSpeed(float whatSpeed)
 {
     // step_delay = whatSpeed;
     step_delay = 1000L * 1000L / stepsPerUnit / whatSpeed;
 }
-void StepperMotor::setStepsPerUnit(long ppu)
+void StepperMotor::setStepsPerUnit(float ppu)
 {
     stepsPerUnit = ppu;
 }
@@ -25,9 +25,11 @@ void StepperMotor::setStartDirection(bool dir)
 {
     startDirection = dir;
 }
-void StepperMotor::moveTo(long absolute)
+void StepperMotor::moveTo(float absolute)
 {
     long target = absolute * stepsPerUnit;
+    long _delay = 0.5 * step_delay - 5;
+    boolean pul_status = LOW;
     if (positon == target)
     {
         return;
@@ -48,14 +50,22 @@ void StepperMotor::moveTo(long absolute)
 
     while (positon != target)
     {
+        digitalWrite(pin_pul, HIGH);
+        delayMicroseconds(_delay);
+        digitalWrite(pin_pul, LOW);
+        delayMicroseconds(_delay);
+        positon = (positon < target) ? positon + 1 : positon - 1;
+        /*
         unsigned long now = micros();
-        if (now - last_step_time >= step_delay)
+        if (now - last_step_time >= _delay)
         {
             last_step_time = now;
-            digitalWrite(pin_pul, HIGH);
-            delayMicroseconds(50);
-            digitalWrite(pin_pul, LOW);
-            positon = (positon < target) ? positon + 1 : positon - 1;
+            pul_status = !pul_status;
+            digitalWrite(pin_pul, pul_status);
+            if(!pul_status) {
+                positon = (positon < target) ? positon + 1 : positon - 1;
+            }
         }
+        */
     }
 }
