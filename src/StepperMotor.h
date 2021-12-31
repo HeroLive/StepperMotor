@@ -9,6 +9,7 @@ class StepperMotor {
         bool startDirection;
         long stepsPerUnit;
         long positon;
+        unsigned long last_step_time;
         unsigned long step_delay;
 
     public:

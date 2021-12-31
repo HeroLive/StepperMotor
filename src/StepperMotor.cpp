@@ -7,13 +7,15 @@ StepperMotor::StepperMotor(int p, int d) : pin_pul(p), pin_dir(d)
     direction = 0;
     startDirection = LOW;
     positon = 0;
+    last_step_time = 0;
     pinMode(pin_pul, OUTPUT);
     pinMode(pin_dir, OUTPUT);
 }
 
 void StepperMotor::setSpeed(long whatSpeed)
 {
-    step_delay = whatSpeed;
+    // step_delay = whatSpeed;
+    step_delay = 1000L * 1000L / stepsPerUnit / whatSpeed;
 }
 void StepperMotor::setStepsPerUnit(long ppu)
 {
@@ -46,10 +48,14 @@ void StepperMotor::moveTo(long absolute)
 
     while (positon != target)
     {
-        digitalWrite(pin_pul, HIGH);
-        delayMicroseconds(step_delay);
-        digitalWrite(pin_pul, LOW);
-        delayMicroseconds(step_delay);
-        positon = (positon < target) ? positon + 1 : positon - 1;
+        unsigned long now = micros();
+        if (now - last_step_time >= step_delay)
+        {
+            last_step_time = now;
+            digitalWrite(pin_pul, HIGH);
+            delayMicroseconds(50);
+            digitalWrite(pin_pul, LOW);
+            positon = (positon < target) ? positon + 1 : positon - 1;
+        }
     }
 }
