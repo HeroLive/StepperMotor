@@ -55,6 +55,7 @@ void StepperMotor::moveTo(float absolute)
         digitalWrite(pin_pul, LOW);
         delayMicroseconds(_delay);
         positon = (positon < target) ? positon + 1 : positon - 1;
+        yield();
         /*
         unsigned long now = micros();
         if (now - last_step_time >= _delay)
