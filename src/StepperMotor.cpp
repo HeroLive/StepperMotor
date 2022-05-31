@@ -25,8 +25,8 @@ void StepperMotor::setStartDirection(bool dir)
 {
     startDirection = dir;
 }
-long StepperMotor::currentPosition(){
-    return positon;
+float StepperMotor::currentPosition(){
+    return positon/stepsPerUnit;
 }
 void StepperMotor::moveTo(float absolute)
 {
