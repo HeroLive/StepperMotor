@@ -17,7 +17,8 @@ class StepperMotor {
         void setSpeed(float whatSpeed);
         void setStepsPerUnit(float ppu);
         void setStartDirection(bool dir);
-        void moveTo(float absolute);        
+        void moveTo(float absolute);
+        long currentPosition();        
 };
 
 #endif
