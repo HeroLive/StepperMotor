@@ -12,6 +12,11 @@ StepperMotor::StepperMotor(int p, int d) : pin_pul(p), pin_dir(d)
     pinMode(pin_dir, OUTPUT);
 }
 
+void StepperMotor::setZero()
+{
+    positon = 0;
+}
+
 void StepperMotor::setSpeed(float whatSpeed)
 {
     // step_delay = whatSpeed;
@@ -20,7 +25,7 @@ void StepperMotor::setSpeed(float whatSpeed)
 void StepperMotor::setStepsPerUnit(float ppu)
 {
     stepsPerUnit = ppu;
-}
+} 
 void StepperMotor::setStartDirection(bool dir)
 {
     startDirection = dir;

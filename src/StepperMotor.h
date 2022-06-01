@@ -14,6 +14,7 @@ class StepperMotor {
 
     public:
         StepperMotor(int p, int d);
+        void setZero();
         void setSpeed(float whatSpeed);
         void setStepsPerUnit(float ppu);
         void setStartDirection(bool dir);
