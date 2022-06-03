@@ -17,12 +17,12 @@ void StepperMotor::setZero()
     positon = 0;
 }
 
-void StepperMotor::setSpeed(float whatSpeed)
+void StepperMotor::setSpeed(double whatSpeed)
 {
     // step_delay = whatSpeed;
     step_delay = 1000L * 1000L / stepsPerUnit / whatSpeed;
 }
-void StepperMotor::setStepsPerUnit(float ppu)
+void StepperMotor::setStepsPerUnit(double ppu)
 {
     stepsPerUnit = ppu;
 } 
@@ -30,13 +30,13 @@ void StepperMotor::setStartDirection(bool dir)
 {
     startDirection = dir;
 }
-float StepperMotor::currentPosition(){
+double StepperMotor::currentPosition(){
     return positon/stepsPerUnit;
 }
-void StepperMotor::moveTo(float absolute)
+void StepperMotor::moveTo(double absolute)
 {
-    long target = absolute * stepsPerUnit;
-    long _delay = 0.5 * step_delay - 5;
+    double target = absolute * stepsPerUnit;
+    double _delay = 0.5 * step_delay - 5;
     boolean pul_status = LOW;
     if (positon == target)
     {
@@ -65,7 +65,7 @@ void StepperMotor::moveTo(float absolute)
         positon = (positon < target) ? positon + 1 : positon - 1;
         yield();
         /*
-        unsigned long now = micros();
+        double now = micros();
         if (now - last_step_time >= _delay)
         {
             last_step_time = now;
