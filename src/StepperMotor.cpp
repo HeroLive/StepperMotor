@@ -35,7 +35,7 @@ double StepperMotor::currentPosition(){
 }
 void StepperMotor::moveTo(double absolute)
 {
-    double target = absolute * stepsPerUnit;
+    long target = absolute * stepsPerUnit;
     double _delay = 0.5 * step_delay - 5;
     boolean pul_status = LOW;
     if (positon == target)
