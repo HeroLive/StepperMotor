@@ -3,23 +3,24 @@
 
 class StepperMotor {
     private:
-        int pin_pul;
-        int pin_dir;
-        bool direction;
-        bool startDirection;
-        double stepsPerUnit;
-        long positon;
-        double last_step_time;
-        double step_delay;
+        int pp;
+        int pd;
+        long position = 0;
+        long increment = 0;
+        bool exe_complete_flag = false;
+        bool pulse_output_flag = false;
+        bool direction = false;
+        long t_us;
+        bool p_state = false;
 
     public:
         StepperMotor(int p, int d);
-        void setZero();
-        void setSpeed(double whatSpeed);
-        void setStepsPerUnit(double ppu);
-        void setStartDirection(bool dir);
-        void moveTo(double absolute);
-        double currentPosition();        
+        long getCurrentPosition();
+        bool getDirection();  
+        bool getExeCompleteFlag(); 
+        void PLSV(long f);    
+        void DRVI(long p, long f);
+        void DRVA(long p, long f);
 };
 
 #endif

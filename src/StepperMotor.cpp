@@ -1,80 +1,85 @@
 #include "Arduino.h"
 #include "StepperMotor.h"
 
-StepperMotor::StepperMotor(int p, int d) : pin_pul(p), pin_dir(d)
-{
-    stepsPerUnit = 1;
-    direction = 0;
-    startDirection = LOW;
-    positon = 0;
-    last_step_time = 0;
-    pinMode(pin_pul, OUTPUT);
-    pinMode(pin_dir, OUTPUT);
+StepperMotor::StepperMotor(int p, int d)
+  : pp(p), pd(d) {
+  t_us = micros();
+  pinMode(pp, OUTPUT);
+  pinMode(pd, OUTPUT);
 }
-
-void StepperMotor::setZero()
-{
-    positon = 0;
+long StepperMotor::getCurrentPosition() {
+  return position;
 }
-
-void StepperMotor::setSpeed(double whatSpeed)
-{
-    // step_delay = whatSpeed;
-    step_delay = 1000L * 1000L / stepsPerUnit / whatSpeed;
+bool StepperMotor::getDirection() {
+  return direction;
 }
-void StepperMotor::setStepsPerUnit(double ppu)
-{
-    stepsPerUnit = ppu;
-} 
-void StepperMotor::setStartDirection(bool dir)
-{
-    startDirection = dir;
+bool StepperMotor::getExeCompleteFlag() {
+return exe_complete_flag;
 }
-double StepperMotor::currentPosition(){
-    return positon/stepsPerUnit;
-}
-void StepperMotor::moveTo(double absolute)
-{
-    long target = absolute * stepsPerUnit;
-    double _delay = 0.5 * step_delay - 5;
-    boolean pul_status = LOW;
-    if (positon == target)
-    {
-        return;
+void StepperMotor::PLSV(long f) {
+  if (f == 0) return;
+  double interval = 1000000.0 / abs(f) * 0.5;
+  if (micros() - t_us >= interval) {
+    bool d_state = f < 0 ? false : true;
+    p_state = !p_state;
+    t_us = micros();
+    digitalWrite(pp, p_state);
+    digitalWrite(pd, d_state);
+    if (p_state == false) {
+      position = f > 0 ? position + 1 : position - 1;
     }
-    else
-    {
-        if (positon < target)
-        {
-            direction = HIGH;
-        }
-        else
-        {
-            direction = LOW;
-        }
-    }
+  }
+}
 
-    digitalWrite(pin_dir, startDirection ? direction : !direction);
+void StepperMotor::DRVI(long p, long f) {
+  if (!pulse_output_flag) {
+    increment = 0;
+  }
+  if (f == 0 || p == 0 || p == increment) {
+    exe_complete_flag = true;
+    pulse_output_flag = false;
+    return;
+  } else {
+    exe_complete_flag = false;
+  }
+  double interval = 1000000.0 / abs(f) * 0.5;
+  if (micros() - t_us >= interval) {
+    bool d_state = p < 0 ? false : true;
+    p_state = !p_state;
+    t_us = micros();
 
-    while (positon != target)
-    {
-        digitalWrite(pin_pul, HIGH);
-        delayMicroseconds(_delay);
-        digitalWrite(pin_pul, LOW);
-        delayMicroseconds(_delay);
-        positon = (positon < target) ? positon + 1 : positon - 1;
-        yield();
-        /*
-        double now = micros();
-        if (now - last_step_time >= _delay)
-        {
-            last_step_time = now;
-            pul_status = !pul_status;
-            digitalWrite(pin_pul, pul_status);
-            if(!pul_status) {
-                positon = (positon < target) ? positon + 1 : positon - 1;
-            }
-        }
-        */
+    digitalWrite(pp, p_state);
+    digitalWrite(pd, d_state);
+
+    pulse_output_flag = true;
+
+    if (p_state == false) {
+      increment = p > 0 ? increment + 1 : increment - 1;
+      position = p > 0 ? position + 1 : position - 1;
     }
+  }
+}
+void StepperMotor::DRVA(long p, long f){
+  if (f == 0 || p == position) {
+    exe_complete_flag = true;
+    pulse_output_flag = false;
+    return;
+  } else {
+    exe_complete_flag = false;
+  }
+  double interval = 1000000.0 / abs(f) * 0.5;
+  if (micros() - t_us >= interval) {
+    bool d_state = p - position < 0 ? false : true;
+    p_state = !p_state;
+    t_us = micros();
+
+    digitalWrite(pp, p_state);
+    digitalWrite(pd, d_state);
+
+    pulse_output_flag = true;
+
+    if (p_state == false) {
+      position = p - position < 0 ? position - 1 : position + 1;
+    }
+  }
 }
