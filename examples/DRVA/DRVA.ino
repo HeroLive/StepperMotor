@@ -5,34 +5,30 @@
 StepperMotor motor_01(PUL1_PIN, DIR1_PIN);
 
 bool M1 = false;
-long D200 = 3000;  //motor 2 frequency
-long D202 = 6400;  //motor 2 pulse value
+long D200 = 8000;   //motor 2 frequency
+long D202 = 64000;  //motor 2 pulse value
 long D204 = 5000;  //motor 2 interval time
-long D0 = 0;       //target position
+long D0 = 0;        //target position
 long _t = millis();
 
 
 void setup() {
   Serial.begin(115200);
   delay(1000);
-  M1 = true;
   D0 = D202;
 }
 
 void loop() {
   if (millis() - _t > D204 && !M1) {
-    _t = millis();
+    D0 = D0 == D202 ? 0 : D202;
     M1 = true;
-    D0 = D0 == D202 ? -D202 : D202;
-    Serial.print("Target: ");
-    Serial.println(D0);
   }
   if (M1) {
-    motor_01.DRVI(D0, D200);
+    motor_01.DRVA(D0, D200);
     if (motor_01.getExeCompleteFlag()) {
       M1 = false;
-      Serial.print("On target: ");
-      Serial.println(D0);
+      Serial.println(D0);      
+      _t = millis();
     }
   }
 }
